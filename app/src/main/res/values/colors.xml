@@ -16,4 +16,7 @@
     <color name="heropage_bio_bg">#FFFFFFFF</color>
     <color name="favorite_button_shadow">#C8FF4242</color>
     <color name="favorite_button">#FF4242</color>
+    <color name="filterbyfavorites_button">#FF6767</color>
+    <color name="back_button">#FFFFFFFF</color>
+    <color name="publisheritem_selected_container">#FFC8C8C8</color>
 </resources>

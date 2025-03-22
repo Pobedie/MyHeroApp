@@ -49,10 +49,11 @@ fun PublisherItem(
 //    isSelected: Boolean,
     modifier: Modifier = Modifier
 ){
-    val targetColor = if (false) Color(200,200,200 ) else Color.White
+//    TODO()
+    val targetColor = if (false) colorResource(R.color.publisheritem_selected_container) else Color.White
     val animatedColor by animateColorAsState(
         targetValue = targetColor,
-        animationSpec = tween(durationMillis = 500), label = "" // 1-second duration
+        animationSpec = tween(durationMillis = 500), label = ""
     )
     Box(
         modifier = modifier

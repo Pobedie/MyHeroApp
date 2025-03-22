@@ -7,9 +7,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -41,17 +43,10 @@ fun LoadingScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            Icon(
-                painter = painterResource(id = R.drawable.loading_img),
-                contentDescription = null,
-                modifier = Modifier
-                    .size(200.dp)
-                    .offset(0.dp, 20.dp)
-            )
+            CircularProgressIndicator()
             Text(
                 text = "Assembling all the heroes!",
-                modifier = Modifier
-                    .offset(0.dp, -20.dp)
+                modifier = Modifier.padding(top = 8.dp)
             )
         }
     }

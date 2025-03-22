@@ -126,7 +126,6 @@ fun HomeScreen(
                     LazyColumn(
                         modifier = Modifier
                             .fillMaxSize()
-
                     ) {
                         when (superheroApiState) {
                             is SuperheroApiState.Loading -> item {LoadingScreen()}

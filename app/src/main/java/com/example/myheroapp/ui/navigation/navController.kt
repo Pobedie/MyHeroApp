@@ -39,7 +39,6 @@ fun MhaAppNavController(
 
 ){
     val navController: NavHostController = rememberNavController()
-
     NavHost(
         navController = navController,
         startDestination = HomeScreenRoute
@@ -52,7 +51,10 @@ fun MhaAppNavController(
         }
         composable<HeroPageRoute>{
             val arguments = it.toRoute<HeroPageRoute>()
-            HeroPageScreen(heroId = arguments.heroId)
+            HeroPageScreen(
+                heroId = arguments.heroId,
+                onBackClick = {navController.navigateUp()}
+            )
 
         }
     }
