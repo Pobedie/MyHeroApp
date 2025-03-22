@@ -1,6 +1,5 @@
 package com.example.myheroapp.ui.screens
 
-import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -42,13 +41,16 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.myheroapp.R
@@ -64,8 +66,8 @@ import com.example.myheroapp.ui.components.LoadingScreen
 
 @Composable
 fun HomeScreen(
-    onHeroCardClick: () -> Unit,
-    viewModel: HomeScreenViewModel = viewModel()
+    onHeroCardClick: (heroId: String) -> Unit,
+    viewModel: HomeScreenViewModel = hiltViewModel<HomeScreenViewModel>()
 ){
     val uiState = viewModel.uiState.collectAsState()
     val superheroApiState = viewModel.superheroApiState
@@ -80,7 +82,7 @@ fun HomeScreen(
                 .fillMaxSize()
                 .padding(paddingValues)
                 .clip(RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp))
-                .background(Color(249, 247, 255))
+                .background(colorResource(R.color.content_bg))
         ){
             Column(
                 modifier = Modifier
@@ -106,7 +108,7 @@ fun HomeScreen(
                                 items(superheroApiState.result){ item ->
                                     HeroItem(
                                         heroInfo = item,
-                                        onHeroCardClick = onHeroCardClick
+                                        onHeroCardClick = {onHeroCardClick(item.id)}
                                     )
                                 }
 
@@ -122,7 +124,7 @@ fun HomeScreen(
                             .background(
                                 Brush.verticalGradient(
                                     colors = listOf(
-                                        Color(249, 247, 255),
+                                        colorResource(R.color.content_bg),
                                         Color(0, 0, 0, 0)
                                     )
                                 )
@@ -145,7 +147,7 @@ private fun TopBar(
         modifier = modifier
             .fillMaxWidth()
             .height(110.dp)
-            .background(Color(255, 255, 255))
+            .background(colorResource(R.color.topbar_bg))
     ){
         Row(
             modifier = Modifier
@@ -178,7 +180,7 @@ private fun TopBar(
                             .width(62.dp)
                             .scale(0.65f)
                             .clip(CircleShape)
-                            .background(Color(0, 0, 0, 100))
+                            .background(colorResource(R.color.ava_shadow))
                         )
 
                     }
@@ -188,11 +190,11 @@ private fun TopBar(
                             .height(52.dp)
                             .width(52.dp)
                             .clip(CircleShape)
-                            .border(2.dp, Color(255, 255, 255), CircleShape)
+                            .border(2.dp, colorResource(R.color.ava_border), CircleShape)
                     ){
                         Image(
                             painter = painterResource(id = R.drawable.ava),
-                            contentDescription = "ava")
+                            contentDescription = null)
                     }
                 }
             }
@@ -210,9 +212,9 @@ private fun TopBar(
                     verticalAlignment = Alignment.Bottom
                 ) {
                     Text(
-                        text = "Good afternoon",
+                        text = stringResource(id = R.string.greeting),
                         style = MaterialTheme.typography.labelLarge,
-                        color = Color(100,100,100)
+                        color = colorResource(R.color.greeting_label)
                     )
                 }
                 Row(
@@ -222,7 +224,7 @@ private fun TopBar(
                     verticalAlignment = Alignment.Bottom
                 ) {
                     Text(
-                        text = "Mike Wazowski",
+                        text = stringResource(id = R.string.user_name),
                         style = MaterialTheme.typography.headlineSmall,
                     )
                 }
@@ -244,15 +246,15 @@ private fun TopBar(
                             .width(48.dp)
                             .height(48.dp)
                             .clip(CircleShape)
-                            .border(1.5.dp, Color(220, 220, 220), CircleShape)
+                            .border(1.5.dp, colorResource(R.color.settings_border), CircleShape)
                             .clickable(onClick = {})
                         ,
                         contentAlignment = Alignment.Center
                     ){
                         Icon(
                             imageVector = Icons.Outlined.Settings,
-                            tint = Color(80,80,80),
-                            contentDescription = "Settings",
+                            tint = colorResource(R.color.setting_icon),
+                            contentDescription = stringResource(id = R.string.settings),
                             modifier = Modifier.size(35.dp)
                         )
                     }
@@ -272,7 +274,7 @@ private fun Picker(
         mutableStateOf(false)
     }
     Box(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         contentAlignment = Alignment.Center
     ){
         SearchBar(
@@ -281,9 +283,9 @@ private fun Picker(
             onSearch = {},
             active = searchIsActive.value,
             onActiveChange = {searchIsActive.value = !searchIsActive.value},
-            placeholder = { Text(text = "All Publishers")},
+            placeholder = { Text(text = stringResource(id = R.string.search_placeholder))},
             trailingIcon = { Icon(imageVector = Icons.Filled.KeyboardArrowDown, contentDescription = "expand")},
-            colors = SearchBarDefaults.colors(containerColor = Color(235,235,235)),
+            colors = SearchBarDefaults.colors(containerColor = colorResource(R.color.searchbar_bg)),
         ) {
 
         }
@@ -317,7 +319,7 @@ private fun HeroItem(
                     .fillMaxWidth(0.9f)
                     .height(150.dp)
                     .clip(RoundedCornerShape(22.dp))
-                    .background(Color(0, 0, 0, 40))
+                    .background(colorResource(R.color.heroitem_shadow))
             )
 
         }
@@ -326,8 +328,8 @@ private fun HeroItem(
                 .fillMaxWidth(0.9f)
                 .height(150.dp)
                 .clip(RoundedCornerShape(24.dp))
-                .background(Color(255, 255, 255))
-                .border(1.5.dp, Color(240, 240, 240), RoundedCornerShape(24.dp))
+                .background(colorResource(R.color.heroitem_container))
+                .border(1.5.dp, colorResource(R.color.heroitem_border), RoundedCornerShape(24.dp))
                 .clickable(onClick = onHeroCardClick)
         ){
             Row(
@@ -347,7 +349,7 @@ private fun HeroItem(
                             .height(120.dp)
                             .width(90.dp)
                             .clip(RoundedCornerShape(20.dp))
-                            .background(Color(1, 1, 1))
+                            .background(colorResource(R.color.heropicture_notloaded))
                     ){
                         AsyncImage(
                             model = ImageRequest.Builder(LocalContext.current)
@@ -355,6 +357,7 @@ private fun HeroItem(
                                 .crossfade(true)
                                 .build(),
                             placeholder = painterResource(id = R.drawable.ic_broken_image),
+                            contentScale = ContentScale.FillBounds,
                             contentDescription = null,
                         )
                     }

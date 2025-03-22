@@ -23,7 +23,8 @@ data class HeroInfo(
     @SerialName("connections")
     val connections: Connections,
     @SerialName("image")
-    val image: Image
+    val image: Image,
+    val isFavorite: Boolean = false,
 ){
     val fullName: String
         get() = biography.fullName

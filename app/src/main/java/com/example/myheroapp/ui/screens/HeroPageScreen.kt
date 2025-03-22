@@ -35,12 +35,16 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
@@ -52,12 +56,13 @@ import com.example.myheroapp.network.HeroInfo
 import com.example.myheroapp.network.Image
 import com.example.myheroapp.network.PowerStats
 import com.example.myheroapp.network.Work
+import dagger.hilt.android.scopes.ViewModelScoped
 
 
 @Composable
 fun HeroPageScreen(
-    heroInfo: HeroInfo,
-    viewModel: HeroPageScreenViewModel = viewModel()
+    heroId: String,
+    viewModel: HeroPageScreenViewModel = hiltViewModel<HeroPageScreenViewModel>()
 ){
     val uiState = viewModel.uiState.collectAsState()
     Box(modifier = Modifier.fillMaxSize()){
@@ -65,16 +70,18 @@ fun HeroPageScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(700.dp)
-                .background(Color.Gray)
+                .background(colorResource(R.color.heropage_picture_notloaded))
         ){
             AsyncImage(
                 model = ImageRequest.Builder(LocalContext.current)
-                    .data(heroInfo.imageUrl)
+                    .data(uiState.value.heroInfo.imageUrl)
                     .crossfade(true)
                     .build()
                 ,
                 contentDescription = null,
-                placeholder = painterResource(id = R.drawable.ic_broken_image)
+                placeholder = painterResource(id = R.drawable.ic_broken_image),
+                modifier = Modifier.fillMaxSize(),
+                contentScale = ContentScale.FillHeight
             )
         }
         Column(
@@ -85,17 +92,19 @@ fun HeroPageScreen(
                 .fillMaxWidth()
                 .height(400.dp)
                 .clip(RoundedCornerShape(topStart = 36.dp, topEnd = 36.dp))
-                .background(Color.White)
+                .background(colorResource(R.color.heropage_bio_bg))
             ) {
                 Column(
                     modifier = Modifier.fillMaxSize()
                 ) {
-                    BioTopBar(heroInfo = heroInfo)
-                    BioText(heroInfo = heroInfo)
+                    BioTopBar(heroInfo = uiState.value.heroInfo)
+                    BioText(heroInfo = uiState.value.heroInfo)
                 }
                 BioFooter(
-                    isFavorite = uiState.value.isFavorite,
-                    onFavoriteClick = {}
+                    isFavorite = uiState.value.heroInfo.isFavorite,
+                    onFavoriteClick = {
+                        viewModel.updateIsFavorite()
+                    }
                 )
             }
         }
@@ -152,7 +161,7 @@ private fun BioTopBar(
                         .height(55.dp)
                         .width(55.dp)
                         .clip(CircleShape)
-                        .background(Color.Gray)
+                        .background(colorResource(R.color.heropage_picture_notloaded))
                 )
             }
             Row(
@@ -186,73 +195,73 @@ private fun BioText(
         LazyColumn {
             item {
                 Text(
-                    text = "Appearance",
+                    text = stringResource(id = R.string.bio_appearance),
                     style = MaterialTheme.typography.titleMedium
                 )
                 Text(
-                    text = "Gender: " + heroInfo.appearance.gender,
+                    text = stringResource(R.string.bio_gender)+": " + heroInfo.appearance.gender,
                     style = MaterialTheme.typography.bodyMedium,
-                    textAlign = TextAlign.Right
+                    textAlign = TextAlign.Justify
                 )
                 Text(
-                    text = "Race: " + heroInfo.appearance.race,
+                    text = stringResource(R.string.bio_race)+": " + heroInfo.appearance.race,
                     style = MaterialTheme.typography.bodyMedium,
-                    textAlign = TextAlign.Right
+                    textAlign = TextAlign.Justify
                 )
                 Text(
-                    text = "Height: " + heroInfo.appearance.height[1],
+                    text = stringResource(R.string.bio_height)+": " + heroInfo.appearance.height[1],
                     style = MaterialTheme.typography.bodyMedium,
-                    textAlign = TextAlign.Right
+                    textAlign = TextAlign.Justify
                 )
                 Text(
-                    text = "Eye color: " + heroInfo.appearance.eyeColor,
+                    text = stringResource(R.string.bio_eye_color)+": " + heroInfo.appearance.eyeColor,
                     style = MaterialTheme.typography.bodyMedium,
-                    textAlign = TextAlign.Right
+                    textAlign = TextAlign.Justify
                 )
                 Text(
-                    text = "Hair color: " + heroInfo.appearance.hairColor,
+                    text = stringResource(R.string.bio_hair_color)+": " + heroInfo.appearance.hairColor,
                     style = MaterialTheme.typography.bodyMedium,
-                    textAlign = TextAlign.Right
+                    textAlign = TextAlign.Justify
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = "Biography",
+                    text = stringResource(R.string.bio_biography),
                     style = MaterialTheme.typography.titleMedium
                 )
                 Text(
-                    text = "Place of Birth: " + heroInfo.biography.placeOfBirth,
+                    text = stringResource(R.string.bio_place_of_birth)+": " + heroInfo.biography.placeOfBirth,
                     style = MaterialTheme.typography.bodyMedium,
-                    textAlign = TextAlign.Right
+                    textAlign = TextAlign.Justify
                 )
                 Text(
-                    text = "First Appearance: " + heroInfo.biography.firstAppearance,
+                    text = stringResource(R.string.bio_first_appearance)+": " + heroInfo.biography.firstAppearance,
                     style = MaterialTheme.typography.bodyMedium,
-                    textAlign = TextAlign.Right
+                    textAlign = TextAlign.Justify
                 )
                 Text(
-                    text = "Behaviour alignment: " + heroInfo.biography.alignment,
+                    text = stringResource(R.string.bio_alignment)+": " + heroInfo.biography.alignment,
                     style = MaterialTheme.typography.bodyMedium,
-                    textAlign = TextAlign.Right
+                    textAlign = TextAlign.Justify
                 )
                 Text(
-                    text = "Occupation: " + heroInfo.work.occupation,
+                    text = stringResource(R.string.bio_occupation)+": " + heroInfo.work.occupation,
                     style = MaterialTheme.typography.bodyMedium,
-                    textAlign = TextAlign.Right
+                    textAlign = TextAlign.Justify
                 )
                 Text(
-                    text = "Base: " + heroInfo.work.base,
+                    text = stringResource(R.string.bio_base)+": " + heroInfo.work.base,
                     style = MaterialTheme.typography.bodyMedium,
-                    textAlign = TextAlign.Right
+                    textAlign = TextAlign.Justify
                 )
                 Text(
-                    text = "Group affiliation: " + heroInfo.connections.groupAffiliation,
+                    text = stringResource(R.string.bio_affiliation)+": " + heroInfo.connections.groupAffiliation,
                     style = MaterialTheme.typography.bodyMedium,
-                    textAlign = TextAlign.Right
+                    textAlign = TextAlign.Justify
                 )
                 Text(
-                    text = "Relatives: " + heroInfo.connections.relatives,
+                    text = stringResource(R.string.bio_relatives)+": " + heroInfo.connections.relatives,
                     style = MaterialTheme.typography.bodyMedium,
-                    textAlign = TextAlign.Right
+                    textAlign = TextAlign.Justify
                 )
                 Spacer(modifier = Modifier.height(100.dp))
             }
@@ -277,7 +286,7 @@ private fun BioFooter(
                     Brush.verticalGradient(
                         colors = listOf(
                             Color(0, 0, 0, 0),
-                            Color.White
+                            colorResource(R.color.heropage_bio_bg)
                         ),
                         endY = 280f
                     )
@@ -308,14 +317,14 @@ private fun BioFooter(
                             .width(65.dp)
                             .scale(0.65f)
                             .clip(CircleShape)
-                            .background(Color(255, 66, 66, 200))
+                            .background(colorResource(R.color.favorite_button_shadow))
                         )
                     }
                     Button(
                         onClick = { onFavoriteClick() },
                         contentPadding = PaddingValues(0.dp),
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = Color(255,66,66)
+                            containerColor = colorResource(R.color.favorite_button)
                         ),
                         modifier = Modifier
                             .height(55.dp)
@@ -324,12 +333,12 @@ private fun BioFooter(
                         if (isFavorite){
                             Icon(
                                 imageVector = Icons.Default.Favorite,
-                                contentDescription = "Remove from favorites"
+                                contentDescription = stringResource(R.string.remove_favorites)
                             )
                         } else {
                             Icon(
                                 imageVector = Icons.Outlined.FavoriteBorder,
-                                contentDescription = "Add to favorites"
+                                contentDescription = stringResource(R.string.add_favorite)
                             )
                         }
                     }
@@ -349,10 +358,10 @@ private fun HeroPageScreenPreview(){
         powerStats = PowerStats("","","","","",""),
         appearance = Appearance("male","Human", listOf("","180cm"), listOf(),"Blue","Brown"),
         biography = Biography(fullName = "James Bond with a very long name","",
-            listOf(),"Casino","", publisher = "EON Productions something","good"),
+            listOf(),"Casino","Casino", publisher = "EON Productions something","good"),
         work = Work("spy","everywhere"),
         connections = Connections("Bonds Bonds Bonds","Bonds from other films"),
         image = Image("")
     )
-    HeroPageScreen(heroInfo)
+    HeroPageScreen(heroId = "1")
 }

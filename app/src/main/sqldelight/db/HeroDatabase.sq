@@ -1,0 +1,55 @@
+CREATE TABLE heroEntity (
+  id TEXT NOT NULL PRIMARY KEY,
+  name TEXT NOT NULL,
+  full_name TEXT,
+  publisher TEXT NOT NULL,
+  image_url TEXT ,
+  gender TEXT NOT NULL,
+  height TEXT NOT NULL,
+  race TEXT NOT NULL,
+  eyeColor TEXT NOT NULL,
+  hairColor TEXT NOT NULL,
+  placeOfBirth TEXT NOT NULL,
+  firstAppearance TEXT NOT NULL,
+  alignment TEXT NOT NULL,
+  occupation TEXT NOT NULL,
+  base TEXT NOT NULL,
+  group_affiliation TEXT NOT NULL,
+  relatives TEXT NOT NULL,
+  is_favorite INTEGER NOT NULL DEFAULT 0 CHECK(is_favorite IN (0,1))
+);
+
+CREATE INDEX hero_publisher ON heroEntity(publisher);
+CREATE INDEX hero_is_favorite ON heroEntity(is_favorite);
+
+
+insertHero:
+INSERT OR REPLACE INTO heroEntity (
+  id, name, full_name, publisher, image_url, gender, height, race, eyeColor, hairColor,
+  placeOfBirth, firstAppearance, alignment, occupation, base, group_affiliation, relatives, is_favorite
+)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+
+updateHeroImage:
+UPDATE heroEntity
+SET image_url = ?
+WHERE id = :id;
+
+updateIsFavorite:
+UPDATE heroEntity
+SET is_favorite = ?
+WHERE id = :id;
+
+selectAllHeroes:
+SELECT *
+FROM heroEntity;
+
+selectHeroById:
+SELECT *
+FROM heroEntity
+WHERE id = :id;
+
+selectFavoriteHeroes:
+SELECT *
+FROM heroEntity
+WHERE is_favorite = 1;

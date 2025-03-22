@@ -5,15 +5,24 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
     id("org.jetbrains.kotlin.plugin.serialization") version "1.9.0"
+    id("app.cash.sqldelight")
+    id("kotlin-kapt")
+    id("com.google.dagger.hilt.android")
 }
 
 val apikeyPropertiesFile = rootProject.file("apikeys.properties")
 val apikeyProperties = Properties()
 apikeyProperties.load(FileInputStream(apikeyPropertiesFile))
 
+
 android {
     namespace = "com.example.myheroapp"
     compileSdk = 35
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
+    }
 
     defaultConfig {
         applicationId = "com.example.myheroapp"
@@ -23,7 +32,7 @@ android {
         versionName = "1.0"
         android.buildFeatures.buildConfig = true
 
-        //Подгружает API ключ из файла apikeys.properties
+        //Подгружает API ключ из файла apikeys.properties, чтобы не хранить ключь открытым текстом в коде после компиляции
         buildConfigField("String", "SUPERHERO_API", apikeyProperties["SUPERHERO_API"].toString())
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -59,6 +68,7 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
+
 }
 
 dependencies {
@@ -72,7 +82,7 @@ dependencies {
 // Navigation
     implementation(libs.androidx.navigation.fragment.ktx)
     implementation(libs.androidx.navigation.ui.ktx)
-    implementation(libs.androidx.navigation.compose)
+    implementation(libs.androidx.compose.navigation)
 
 // Retrofit
     implementation(libs.retrofit)
@@ -86,6 +96,17 @@ dependencies {
 
 // Coil
     implementation(libs.coil.compose)
+
+// SqlDelight
+    implementation(libs.android.driver)
+    implementation(libs.coroutines.extensions)
+
+// Dagger and Hilt
+    implementation("com.google.dagger:hilt-android:2.51.1")
+    kapt("com.google.dagger:hilt-android-compiler:2.51.1")
+//    implementation("androidx.hilt:hilt-lifecycle-viewmodel:1.0.0-alpha03")
+    kapt("androidx.hilt:hilt-compiler:1.2.0")
+    implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
@@ -102,5 +123,17 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
-    implementation(kotlin("script-runtime"))
+    implementation("org.jetbrains.kotlin:kotlin-script-runtime:1.9.0")
+}
+
+kapt {
+    correctErrorTypes = true
+}
+
+sqldelight {
+    databases {
+        create("HeroDatabase") {
+            packageName.set("com.example.sqldelight.db")
+        }
+    }
 }
