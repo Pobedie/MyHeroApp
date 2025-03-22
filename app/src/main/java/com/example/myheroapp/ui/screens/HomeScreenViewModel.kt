@@ -5,14 +5,18 @@ import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import app.cash.sqldelight.driver.android.AndroidSqliteDriver
+import com.example.myheroapp.R
 import com.example.myheroapp.data.HeroDataSource
 import com.example.myheroapp.data.HeroDataSourceImpl
 import com.example.myheroapp.network.HeroInfo
 import com.example.myheroapp.network.SuperheroApi
+import com.example.myheroapp.utils.getPublisherImg
 import com.example.myheroapp.utils.heroEntityToHeroInfo
 import com.example.sqldelight.db.HeroDatabase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -20,6 +24,9 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.last
+import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.xmlpull.v1.sax2.Driver
@@ -39,6 +46,7 @@ class HomeScreenViewModel @Inject constructor(
 
     init {
         getHeroesInfo()
+        selectPublishers("")
     }
 
     fun getHeroesInfo() {
@@ -80,6 +88,72 @@ class HomeScreenViewModel @Inject constructor(
         }
     }
 
+    fun publisherImage(publisher: String): Int{
+        return getPublisherImg(publisher)
+    }
+
+    fun selectPublishers(publisher: String?){
+        viewModelScope.launch {
+            try {
+                val publishers = heroDataSource.selectPublishers(publisher ?: "")
+                _uiState.update { state ->
+                    state.copy(
+                        publishersList = publishers.first()
+                    )
+                }
+                Log.i(TAG, "Publishers found: $publishers")
+            } catch (e: Exception){
+                Log.e(TAG, "Unexpected error: $e")
+            }
+        }
+    }
+
+    fun changeShowOnlyFavorites(){
+        val currentState = uiState.value.showOnlyFavorites
+        _uiState.update { state ->
+            state.copy(
+                showOnlyFavorites = !currentState
+            )
+        }
+        selectHeroByPublisherAndFavorite()
+    }
+
+    fun updateFilterByPublisher(publisher: String){
+        _uiState.update { state ->
+            state.copy(
+                filterByPublisher = publisher
+            )
+        }
+        selectHeroByPublisherAndFavorite()
+    }
+
+    fun changeSearchIsActive(){
+        val currentState = uiState.value.searchIsActive
+        _uiState.update { state ->
+            state.copy(
+                searchIsActive = !currentState
+            )
+        }
+    }
+
+    private fun selectHeroByPublisherAndFavorite(){
+        viewModelScope.launch {
+            try {
+                val heroes = heroDataSource.selectHeroesByPublisherAndFavorite(
+                    uiState.value.filterByPublisher,
+                    uiState.value.showOnlyFavorites)
+                val heroesInfoList = mutableListOf<HeroInfo>()
+                heroes.first().forEach {
+                    heroesInfoList.add(it.heroEntityToHeroInfo())
+                }
+                superheroApiState = SuperheroApiState.Success(heroesInfoList)
+            } catch (e: Exception){
+                Log.e(TAG, "Unexpected error: $e")
+            }
+        }
+
+    }
+
     private fun insertHeroInDatabase(heroInfo: HeroInfo){
         viewModelScope.launch {
             heroDataSource.insertHero(heroInfo)
@@ -89,8 +163,10 @@ class HomeScreenViewModel @Inject constructor(
 }
 
 data class HomeScreenUiState(
-    val searchQuery: String = "",
-    val listResult: String = ""
+    val showOnlyFavorites: Boolean = false,
+    val filterByPublisher: String = "",
+    val searchIsActive: Boolean = false,
+    val publishersList: List<String> = listOf()
 )
 
 sealed interface SuperheroApiState {

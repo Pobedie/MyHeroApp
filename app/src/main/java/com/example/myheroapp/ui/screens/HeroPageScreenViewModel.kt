@@ -13,6 +13,7 @@ import com.example.myheroapp.network.HeroInfo
 import com.example.myheroapp.network.Image
 import com.example.myheroapp.network.PowerStats
 import com.example.myheroapp.network.Work
+import com.example.myheroapp.utils.getPublisherImg
 import com.example.myheroapp.utils.heroEntityToHeroInfo
 import dagger.hilt.android.internal.lifecycle.HiltViewModelFactory
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -49,6 +50,10 @@ class HeroPageScreenViewModel @Inject constructor(
             heroDataSource.updateIsFavorite(uiState.value.heroInfo, value)
             getHeroInformation(heroId)
         }
+    }
+
+    fun publisherImage(): Int{
+        return getPublisherImg(uiState.value.heroInfo.publisher)
     }
 
     private fun updateHeroInfo(heroInfo: HeroInfo){

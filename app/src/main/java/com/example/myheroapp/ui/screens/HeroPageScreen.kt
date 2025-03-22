@@ -1,5 +1,6 @@
 package com.example.myheroapp.ui.screens
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -97,7 +98,10 @@ fun HeroPageScreen(
                 Column(
                     modifier = Modifier.fillMaxSize()
                 ) {
-                    BioTopBar(heroInfo = uiState.value.heroInfo)
+                    BioTopBar(
+                        heroInfo = uiState.value.heroInfo,
+                        publisherImg = viewModel.publisherImage()
+                    )
                     BioText(heroInfo = uiState.value.heroInfo)
                 }
                 BioFooter(
@@ -113,7 +117,8 @@ fun HeroPageScreen(
 
 @Composable
 private fun BioTopBar(
-    heroInfo: HeroInfo
+    heroInfo: HeroInfo,
+    publisherImg: Int
 ){
     Row(modifier = Modifier
         .fillMaxWidth()
@@ -143,6 +148,7 @@ private fun BioTopBar(
                 )
             }
         }
+//        Publisher img and name
         Column(
             modifier = Modifier
                 .padding()
@@ -162,7 +168,9 @@ private fun BioTopBar(
                         .width(55.dp)
                         .clip(CircleShape)
                         .background(colorResource(R.color.heropage_picture_notloaded))
-                )
+                ){
+                    Image(painter = painterResource(publisherImg), contentDescription = null)
+                }
             }
             Row(
                 modifier = Modifier

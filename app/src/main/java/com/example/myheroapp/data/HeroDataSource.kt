@@ -22,7 +22,11 @@ interface HeroDataSource {
 
     suspend fun updateIsFavorite(heroInfo: HeroInfo, isFavorite: Boolean)
 
+    suspend fun selectPublishers(publisher: String): Flow<List<String>>
 
+    suspend fun selectHeroesByPublisher(publisher: String): Flow<List<HeroEntity>>
+
+    suspend fun selectHeroesByPublisherAndFavorite(publisher: String, isFavorite: Boolean): Flow<List<HeroEntity>>
 }
 
 

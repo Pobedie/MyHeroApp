@@ -72,4 +72,28 @@ class HeroDataSourceImpl(
             )
         }
     }
+
+    override suspend fun selectPublishers(publisher: String): Flow<List<String>> {
+        return withContext(Dispatchers.IO){
+            queries.selectPublishers(publisher).asFlow().mapToList(Dispatchers.IO)
+        }
+    }
+
+    override suspend fun selectHeroesByPublisher(publisher: String): Flow<List<HeroEntity>> {
+        return withContext(Dispatchers.IO){
+            queries.selectHeroesByPublisher(publisher).asFlow().mapToList(Dispatchers.IO)
+        }
+    }
+
+    override suspend fun selectHeroesByPublisherAndFavorite(
+        publisher: String,
+        isFavorite: Boolean
+    ): Flow<List<HeroEntity>> {
+        return withContext(Dispatchers.IO){
+            queries.selectHeroesByPublisherAndFavorite(
+                publisher = publisher,
+                isFavorite = if (isFavorite) 1 else 0
+            ).asFlow().mapToList(Dispatchers.IO)
+        }
+    }
 }

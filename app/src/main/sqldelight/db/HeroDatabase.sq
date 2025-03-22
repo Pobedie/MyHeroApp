@@ -53,3 +53,18 @@ selectFavoriteHeroes:
 SELECT *
 FROM heroEntity
 WHERE is_favorite = 1;
+
+selectPublishers:
+SELECT DISTINCT publisher
+FROM heroEntity
+WHERE publisher LIKE '%' || :searchTerm || '%';
+
+selectHeroesByPublisher:
+SELECT *
+FROM heroEntity
+WHERE publisher = :publisher;
+
+selectHeroesByPublisherAndFavorite:
+SELECT *
+FROM heroEntity
+WHERE publisher LIKE '%' || :publisher || '%' AND is_favorite = :isFavorite;
