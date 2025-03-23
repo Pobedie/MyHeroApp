@@ -42,10 +42,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.myheroapp.R
 import com.example.myheroapp.network.HeroInfo
+import db.HeroEntity
 
 @Composable
 fun BiographyCard(
-    heroInfo: HeroInfo,
+    heroEntity: HeroEntity,
     publisherImg: Int,
     updateIsFavorite: () -> Unit
 ){
@@ -60,13 +61,15 @@ fun BiographyCard(
             modifier = Modifier.fillMaxSize()
         ) {
             TopBar(
-                heroInfo = heroInfo,
+                heroEntity = heroEntity,
                 publisherImg = publisherImg
             )
-            BioText(heroInfo = heroInfo)
+            BioText(
+                heroEntity = heroEntity,
+            )
         }
         BioFooter(
-            isFavorite = heroInfo.isFavorite,
+            isFavorite = heroEntity.is_favorite==1L,
             onFavoriteClick = {
                 updateIsFavorite()
             }
@@ -76,7 +79,7 @@ fun BiographyCard(
 
 @Composable
 private fun TopBar(
-    heroInfo: HeroInfo,
+    heroEntity: HeroEntity,
     publisherImg: Int
 ){
     Row(modifier = Modifier
@@ -93,7 +96,7 @@ private fun TopBar(
                 .padding(start = 32.dp, top = 12.dp)
                 .height(40.dp)) {
                 Text(
-                    text = heroInfo.name,
+                    text = heroEntity.name,
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold
                 )
@@ -102,7 +105,7 @@ private fun TopBar(
                 .padding(start = 32.dp)
                 .height(50.dp)) {
                 Text(
-                    text = heroInfo.fullName,
+                    text = heroEntity.full_name ?: "",
                     style = MaterialTheme.typography.bodyLarge
                 )
             }
@@ -140,7 +143,7 @@ private fun TopBar(
                 horizontalArrangement = Arrangement.Center
             ) {
                 Text(
-                    text = heroInfo.publisher,
+                    text = heroEntity.publisher,
                     style = MaterialTheme.typography.labelSmall,
                     textAlign = TextAlign.Center,
                     modifier = Modifier.fillMaxWidth(),
@@ -152,7 +155,7 @@ private fun TopBar(
 
 @Composable
 private fun BioText(
-    heroInfo: HeroInfo
+    heroEntity: HeroEntity
 ){
     Row(
         modifier = Modifier
@@ -166,27 +169,27 @@ private fun BioText(
                     style = MaterialTheme.typography.titleMedium
                 )
                 Text(
-                    text = stringResource(R.string.bio_gender) +": " + heroInfo.appearance.gender,
+                    text = stringResource(R.string.bio_gender) +": " + heroEntity.gender,
                     style = MaterialTheme.typography.bodyMedium,
                     textAlign = TextAlign.Justify
                 )
                 Text(
-                    text = stringResource(R.string.bio_race) +": " + heroInfo.appearance.race,
+                    text = stringResource(R.string.bio_race) +": " + heroEntity.race,
                     style = MaterialTheme.typography.bodyMedium,
                     textAlign = TextAlign.Justify
                 )
                 Text(
-                    text = stringResource(R.string.bio_height) +": " + heroInfo.appearance.height[1],
+                    text = stringResource(R.string.bio_height) +": " + heroEntity.height,
                     style = MaterialTheme.typography.bodyMedium,
                     textAlign = TextAlign.Justify
                 )
                 Text(
-                    text = stringResource(R.string.bio_eye_color) +": " + heroInfo.appearance.eyeColor,
+                    text = stringResource(R.string.bio_eye_color) +": " + heroEntity.eyeColor,
                     style = MaterialTheme.typography.bodyMedium,
                     textAlign = TextAlign.Justify
                 )
                 Text(
-                    text = stringResource(R.string.bio_hair_color) +": " + heroInfo.appearance.hairColor,
+                    text = stringResource(R.string.bio_hair_color) +": " + heroEntity.hairColor,
                     style = MaterialTheme.typography.bodyMedium,
                     textAlign = TextAlign.Justify
                 )
@@ -196,37 +199,37 @@ private fun BioText(
                     style = MaterialTheme.typography.titleMedium
                 )
                 Text(
-                    text = stringResource(R.string.bio_place_of_birth) +": " + heroInfo.biography.placeOfBirth,
+                    text = stringResource(R.string.bio_place_of_birth) +": " + heroEntity.placeOfBirth,
                     style = MaterialTheme.typography.bodyMedium,
                     textAlign = TextAlign.Justify
                 )
                 Text(
-                    text = stringResource(R.string.bio_first_appearance) +": " + heroInfo.biography.firstAppearance,
+                    text = stringResource(R.string.bio_first_appearance) +": " + heroEntity.firstAppearance,
                     style = MaterialTheme.typography.bodyMedium,
                     textAlign = TextAlign.Justify
                 )
                 Text(
-                    text = stringResource(R.string.bio_alignment) +": " + heroInfo.biography.alignment,
+                    text = stringResource(R.string.bio_alignment) +": " + heroEntity.alignment,
                     style = MaterialTheme.typography.bodyMedium,
                     textAlign = TextAlign.Justify
                 )
                 Text(
-                    text = stringResource(R.string.bio_occupation) +": " + heroInfo.work.occupation,
+                    text = stringResource(R.string.bio_occupation) +": " + heroEntity.occupation,
                     style = MaterialTheme.typography.bodyMedium,
                     textAlign = TextAlign.Justify
                 )
                 Text(
-                    text = stringResource(R.string.bio_base) +": " + heroInfo.work.base,
+                    text = stringResource(R.string.bio_base) +": " + heroEntity.base,
                     style = MaterialTheme.typography.bodyMedium,
                     textAlign = TextAlign.Justify
                 )
                 Text(
-                    text = stringResource(R.string.bio_affiliation) +": " + heroInfo.connections.groupAffiliation,
+                    text = stringResource(R.string.bio_affiliation) +": " + heroEntity.group_affiliation,
                     style = MaterialTheme.typography.bodyMedium,
                     textAlign = TextAlign.Justify
                 )
                 Text(
-                    text = stringResource(R.string.bio_relatives) +": " + heroInfo.connections.relatives,
+                    text = stringResource(R.string.bio_relatives) +": " + heroEntity.relatives,
                     style = MaterialTheme.typography.bodyMedium,
                     textAlign = TextAlign.Justify
                 )

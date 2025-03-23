@@ -81,7 +81,7 @@ fun HeroPageScreen(
         ){
             AsyncImage(
                 model = ImageRequest.Builder(LocalContext.current)
-                    .data(uiState.value.heroInfo.imageUrl)
+                    .data(uiState.value.heroEntity.image_url)
                     .crossfade(true)
                     .build()
                 ,
@@ -119,7 +119,7 @@ fun HeroPageScreen(
             verticalArrangement = Arrangement.Bottom
         ) {
             BiographyCard(
-                heroInfo = uiState.value.heroInfo,
+                heroEntity = uiState.value.heroEntity,
                 publisherImg = viewModel.publisherImage(),
                 updateIsFavorite = {viewModel.updateIsFavorite()})
         }

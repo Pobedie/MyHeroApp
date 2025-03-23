@@ -29,45 +29,45 @@ class HeroDataSourceImpl(
     }
 
     override suspend fun insertHero(
-        heroInfo: HeroInfo
+        heroEntity: HeroEntity
     ) {
         return withContext(Dispatchers.IO){
             queries.insertHero(
-                id = heroInfo.id,
-                name = heroInfo.name,
-                full_name = heroInfo.biography.fullName,
-                publisher = heroInfo.biography.publisher,
-                image_url = heroInfo.image.url,
-                gender = heroInfo.appearance.gender,
-                height = heroInfo.appearance.height[1],
-                race = heroInfo.appearance.race,
-                eyeColor = heroInfo.appearance.eyeColor,
-                hairColor = heroInfo.appearance.hairColor,
-                placeOfBirth = heroInfo.biography.placeOfBirth,
-                firstAppearance = heroInfo.biography.firstAppearance,
-                alignment = heroInfo.biography.alignment,
-                occupation = heroInfo.work.occupation,
-                base = heroInfo.work.base,
-                group_affiliation = heroInfo.connections.groupAffiliation,
-                relatives = heroInfo.connections.relatives,
+                id = heroEntity.id,
+                name = heroEntity.name,
+                full_name = heroEntity.full_name,
+                publisher = heroEntity.publisher,
+                image_url = heroEntity.image_url,
+                gender = heroEntity.gender,
+                height = heroEntity.height,
+                race = heroEntity.race,
+                eyeColor = heroEntity.eyeColor,
+                hairColor = heroEntity.hairColor,
+                placeOfBirth = heroEntity.placeOfBirth,
+                firstAppearance = heroEntity.firstAppearance,
+                alignment = heroEntity.alignment,
+                occupation = heroEntity.occupation,
+                base = heroEntity.base,
+                group_affiliation = heroEntity.group_affiliation,
+                relatives = heroEntity.relatives,
                 is_favorite = 0,
             )
         }
     }
 
-    override suspend fun updateHeroImage(heroInfo: HeroInfo) {
+    override suspend fun updateHeroImage(heroEntity: HeroEntity) {
         return withContext(Dispatchers.IO){
             queries.updateHeroImage(
-                id = heroInfo.id,
-                image_url = heroInfo.imageUrl
+                id = heroEntity.id,
+                image_url = heroEntity.image_url
             )
         }
     }
 
-    override suspend fun updateIsFavorite(heroInfo: HeroInfo, isFavorite:Boolean) {
+    override suspend fun updateIsFavorite(heroEntity: HeroEntity, isFavorite:Boolean) {
         return withContext(Dispatchers.IO){
             queries.updateIsFavorite(
-                id = heroInfo.id,
+                id = heroEntity.id,
                 is_favorite = if (isFavorite) {1} else {0}
             )
         }

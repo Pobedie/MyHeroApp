@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.myheroapp.data.HeroDataSource
+import com.example.myheroapp.data.HeroRepository
 import com.example.myheroapp.network.Appearance
 import com.example.myheroapp.network.Biography
 import com.example.myheroapp.network.Connections
@@ -17,6 +18,7 @@ import com.example.myheroapp.utils.getPublisherImg
 import com.example.myheroapp.utils.heroEntityToHeroInfo
 import dagger.hilt.android.internal.lifecycle.HiltViewModelFactory
 import dagger.hilt.android.lifecycle.HiltViewModel
+import db.HeroEntity
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -26,7 +28,7 @@ import javax.inject.Inject
 @HiltViewModel
 class HeroPageScreenViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
-    private val heroDataSource: HeroDataSource
+    private val heroRepository: HeroRepository
 ): ViewModel() {
     private val _uiState = MutableStateFlow(HeroPageScreenUiState())
     public val uiState = _uiState.asStateFlow()
@@ -40,26 +42,26 @@ class HeroPageScreenViewModel @Inject constructor(
     }
 
     private suspend fun getHeroInformation(id: String){
-        val hero = heroDataSource.selectHeroById(id)!!.heroEntityToHeroInfo()
-        updateHeroInfo(heroInfo = hero)
+        val hero = heroRepository.selectHeroById(id)!!
+        updateHeroEntry(heroEntity = hero)
     }
 
     fun updateIsFavorite(){
-        val value = !uiState.value.heroInfo.isFavorite
+        val value = uiState.value.heroEntity.is_favorite != 1L
         viewModelScope.launch {
-            heroDataSource.updateIsFavorite(uiState.value.heroInfo, value)
+            heroRepository.updateHeroIsFavorite(uiState.value.heroEntity, value)
             getHeroInformation(heroId)
         }
     }
 
     fun publisherImage(): Int{
-        return getPublisherImg(uiState.value.heroInfo.publisher)
+        return getPublisherImg(uiState.value.heroEntity.publisher)
     }
 
-    private fun updateHeroInfo(heroInfo: HeroInfo){
+    private fun updateHeroEntry(heroEntity: HeroEntity){
         _uiState.update { state ->
             state.copy(
-                heroInfo = heroInfo,
+                heroEntity = heroEntity
             )
         }
     }
@@ -67,17 +69,8 @@ class HeroPageScreenViewModel @Inject constructor(
 }
 
 data class HeroPageScreenUiState(
-    val heroInfo: HeroInfo = HeroInfo(
-        response = "",
-        id = "",
-        name = "",
-        powerStats = PowerStats("","","","","",""),
-        appearance = Appearance("","", listOf("",""), listOf(),"",""),
-        biography = Biography(fullName = "","",
-            listOf(),"","", publisher = "",""),
-        work = Work("",""),
-        connections = Connections("",""),
-        image = Image("")
-    )
+    val heroEntity: HeroEntity = HeroEntity("","","","",
+        "","","","","","","",
+        "","","","","","",0)
 )
 

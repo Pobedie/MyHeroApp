@@ -16,11 +16,11 @@ interface HeroDataSource {
 
     fun selectFavoriteHeroes(): Flow<List<HeroEntity>>
 
-    suspend fun insertHero(heroInfo: HeroInfo)
+    suspend fun insertHero(heroInfo: HeroEntity)
 
-    suspend fun updateHeroImage(heroInfo: HeroInfo)
+    suspend fun updateHeroImage(heroInfo: HeroEntity)
 
-    suspend fun updateIsFavorite(heroInfo: HeroInfo, isFavorite: Boolean)
+    suspend fun updateIsFavorite(heroInfo: HeroEntity, isFavorite: Boolean)
 
     suspend fun selectPublishers(publisher: String): Flow<List<String>>
 

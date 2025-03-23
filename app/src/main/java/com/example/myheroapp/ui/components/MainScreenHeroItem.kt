@@ -42,10 +42,12 @@ import com.example.myheroapp.network.Connections
 import com.example.myheroapp.network.HeroInfo
 import com.example.myheroapp.network.PowerStats
 import com.example.myheroapp.network.Work
+import com.example.myheroapp.utils.toHeroEntity
+import db.HeroEntity
 
 @Composable
 fun HeroItem(
-    heroInfo: HeroInfo,
+    heroEntity: HeroEntity,
     publisherImg: Int,
     onHeroCardClick: () -> Unit,
     modifier: Modifier = Modifier
@@ -104,7 +106,7 @@ fun HeroItem(
                     ){
                         AsyncImage(
                             model = ImageRequest.Builder(LocalContext.current)
-                                .data(heroInfo.imageUrl)
+                                .data(heroEntity.image_url)
                                 .crossfade(true)
                                 .build(),
                             placeholder = painterResource(id = R.drawable.ic_broken_image),
@@ -128,7 +130,7 @@ fun HeroItem(
                         verticalAlignment = Alignment.Top
                     ) {
                         Text(
-                            text = heroInfo.name,
+                            text = heroEntity.name,
                             style = MaterialTheme.typography.bodyLarge,
                             fontWeight = FontWeight.Bold
                         )
@@ -140,7 +142,7 @@ fun HeroItem(
                         verticalAlignment = Alignment.Top
                     ) {
                         Text(
-                            text = heroInfo.fullName,
+                            text = heroEntity.full_name ?: "",
                             style = MaterialTheme.typography.bodyMedium,
                         )
                     }
@@ -179,7 +181,7 @@ fun HeroItem(
                         horizontalArrangement = Arrangement.Center
                     ) {
                         Text(
-                            text = heroInfo.publisher,
+                            text = heroEntity.publisher,
                             style = MaterialTheme.typography.labelSmall,
                             textAlign = TextAlign.Center,
                             modifier = Modifier.width(75.dp)
@@ -210,7 +212,7 @@ private fun HeroItemPreview(){
         image = com.example.myheroapp.network.Image("")
     )
     HeroItem(
-        heroInfo = heroInfo,
+        heroEntity = heroInfo.toHeroEntity(),
         publisherImg = R.drawable.ic_broken_image,
         onHeroCardClick = {}
     )

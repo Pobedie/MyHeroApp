@@ -84,6 +84,11 @@ fun HomeScreen(
 ){
     val uiState = viewModel.uiState.collectAsState()
     val superheroApiState = viewModel.superheroApiState
+
+    LaunchedEffect(uiState.value.heroList) {
+        viewModel.getHeroesInfo()
+    }
+
     Scaffold(
         topBar = {TopBar(Modifier.padding(top = 8.dp))},
         containerColor = Color.White,
@@ -106,7 +111,7 @@ fun HomeScreen(
                     updateSearchIsActive = {viewModel.changeSearchIsActive()},
                     showingFromPublisher = uiState.value.filterByPublisher,
                     publishersList = uiState.value.publishersList,
-                    onSearchQuery = {viewModel.selectPublishers(publisher = it)},
+                    onSearchQuery = {viewModel.selectHeroByPublisherAndFavorite()},
                     onPublisherClick = {
                         viewModel.updateFilterByPublisher(it)
                         viewModel.changeSearchIsActive()
@@ -131,9 +136,9 @@ fun HomeScreen(
                             is SuperheroApiState.Loading -> item {LoadingScreen()}
                             is SuperheroApiState.Error -> item {ErrorScreen(onRetry = {viewModel.getHeroesInfo()})}
                             is SuperheroApiState.Success -> {
-                                items(superheroApiState.result){ item ->
+                                items(uiState.value.heroList){ item ->
                                     HeroItem(
-                                        heroInfo = item,
+                                        heroEntity = item,
                                         publisherImg = viewModel.publisherImage(item.publisher),
                                         onHeroCardClick = {onHeroCardClick(item.id)}
                                     )
