@@ -35,6 +35,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.myheroapp.R
 
+private const val TAG = "MainScreenTopBar"
+
 @Composable
 fun TopBar(
     modifier: Modifier = Modifier

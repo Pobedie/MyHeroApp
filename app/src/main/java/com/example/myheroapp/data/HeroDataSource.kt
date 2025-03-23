@@ -29,37 +29,3 @@ interface HeroDataSource {
     suspend fun selectHeroesByPublisherAndFavorite(publisher: String, isFavorite: Boolean): Flow<List<HeroEntity>>
 }
 
-
-/**
- *
-insertHero:
-INSERT OR REPLACE INTO hero (
-id, name, full_name, publisher, image_url, gender, height, race, eyeColor, hairColor,
-placeOfBirth, firstAppearance, alignment, occupation, base, group_affiliation, relatives, is_favorite
-)
-VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
-
-updateHeroImage:
-UPDATE hero
-SET image_url = ?
-WHERE id = :id;
-
-updateIsFavorite:
-UPDATE hero
-SET is_favorite = ?
-WHERE id = :id;
-
-selectAllHeroes:
-SELECT *
-FROM hero;
-
-selectHeroById:
-SELECT *
-FROM hero
-WHERE id = :id;
-
-selectFavoriteHeroes:
-SELECT *
-FROM hero
-WHERE is_favorite = 1;
- */

@@ -2,32 +2,24 @@ package com.example.myheroapp.ui.screens
 
 import android.util.Log
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.myheroapp.data.HeroRepository
-import com.example.myheroapp.network.HeroInfo
-import com.example.myheroapp.utils.getPublisherImg
-import com.example.myheroapp.utils.heroEntityToHeroInfo
 import dagger.hilt.android.lifecycle.HiltViewModel
 import db.HeroEntity
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-private val TAG = "HomeScreenViewModel"
+private const val TAG = "HomeScreenViewModel"
+private const val ELEMENTS_PER_PAGE = 20
 
 @HiltViewModel
 class HomeScreenViewModel @Inject constructor(
@@ -49,7 +41,8 @@ class HomeScreenViewModel @Inject constructor(
         }else{
             viewModelScope.launch {
                 try {
-                    val deferredResults = (1..50).map { id ->
+                    val loadFromID = uiState.value.loadedFromID
+                    val deferredResults = (1..loadFromID+ELEMENTS_PER_PAGE).map { id ->
                         async {
                             return@async heroRepository.selectHeroById(id.toString())
                         }
@@ -70,12 +63,18 @@ class HomeScreenViewModel @Inject constructor(
                     Log.e(TAG, "Unexpected error: ${e.message}")
                 }
             }
-
         }
     }
 
+    fun loadMoreElements(){
+        _uiState.update { state ->
+            state.copy(loadedFromID = state.loadedFromID + ELEMENTS_PER_PAGE+1)
+        }
+        getHeroesInfo()
+    }
+
     fun publisherImage(publisher: String): Int{
-        return getPublisherImg(publisher)
+        return heroRepository.getPublisherImage(publisher)
     }
 
     fun changeShowOnlyFavorites(){
@@ -129,8 +128,16 @@ class HomeScreenViewModel @Inject constructor(
         }
     }
 
+    private fun addToHeroList(heroList: List<HeroEntity>){
+        _uiState.update { state ->
+            state.copy(
+                heroList = state.heroList + heroList
+            )
+        }
+    }
+
     fun selectPublishers(searchPublishers: String){
-        viewModelScope.launch {
+        viewModelScope.launch() {
             val publishers = heroRepository.selectPublishers(searchPublishers)
             updatePublishersList(publishers.first())
         }
@@ -150,6 +157,7 @@ data class HomeScreenUiState(
     val showOnlyFavorites: Boolean = false,
     val filterByPublisher: String = "",
     val searchIsActive: Boolean = false,
+    val loadedFromID: Int = 1,
     val publishersList: List<String> = listOf(),
     val heroList: List<HeroEntity> = listOf()
 )

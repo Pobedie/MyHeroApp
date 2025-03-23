@@ -32,7 +32,7 @@ android {
         versionName = "1.0"
         android.buildFeatures.buildConfig = true
 
-        //Подгружает API ключ из файла apikeys.properties, чтобы не хранить ключь открытым текстом в коде после компиляции
+        //Подгружает API ключ из файла apikeys.properties
         buildConfigField("String", "SUPERHERO_API", apikeyProperties["SUPERHERO_API"].toString())
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -104,7 +104,6 @@ dependencies {
 // Dagger and Hilt
     implementation("com.google.dagger:hilt-android:2.51.1")
     kapt("com.google.dagger:hilt-android-compiler:2.51.1")
-//    implementation("androidx.hilt:hilt-lifecycle-viewmodel:1.0.0-alpha03")
     kapt("androidx.hilt:hilt-compiler:1.2.0")
     implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
 

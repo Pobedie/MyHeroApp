@@ -45,6 +45,8 @@ import com.example.myheroapp.network.Work
 import com.example.myheroapp.utils.toHeroEntity
 import db.HeroEntity
 
+private const val TAG = "HeroItem"
+
 @Composable
 fun HeroItem(
     heroEntity: HeroEntity,

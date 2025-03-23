@@ -41,8 +41,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.myheroapp.R
-import com.example.myheroapp.network.HeroInfo
 import db.HeroEntity
+
+private const val TAG = "BiographyCard"
 
 @Composable
 fun BiographyCard(

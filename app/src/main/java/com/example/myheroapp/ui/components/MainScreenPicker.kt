@@ -23,12 +23,15 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.myheroapp.R
 import com.example.myheroapp.utils.getPublisherImg
+
+private const val TAG = "MainScreenPicker"
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -51,22 +54,39 @@ fun Picker(
         contentAlignment = Alignment.Center
     ){
         SearchBar(
-            query = if (searchIsActive) searchQuery.value else ""
-            ,
+            query = if (searchIsActive) searchQuery.value else "",
             onQueryChange = {
                 searchQuery.value = it
-                onSearchQuery(searchQuery.value) },
+                onSearchQuery(searchQuery.value)
+            },
             onSearch = {},
             active = searchIsActive,
             onActiveChange = { updateSearchIsActive() },
             placeholder = {
-                if (showingFromPublisher == ""){
+                if (showingFromPublisher == "" && !isFavoriteFilterOn) {
                     Text(text = stringResource(id = R.string.search_placeholder))
-                } else{
+                } else if (showingFromPublisher == "" && isFavoriteFilterOn) {
+                    Text(text = stringResource(id = R.string.show_all_favorites))
+                } else if (showingFromPublisher != "" && isFavoriteFilterOn) {
+                    Text(text = stringResource(R.string.show_favorites_from)+" "+showingFromPublisher)
+                } else {
                     Text(text = showingFromPublisher)
                 }
             },
-            trailingIcon = { Icon(imageVector = Icons.Filled.KeyboardArrowDown, contentDescription = "expand") },
+            trailingIcon = {
+                if (searchIsActive){
+                    Icon(
+                        imageVector = Icons.Filled.KeyboardArrowDown,
+                        contentDescription = stringResource(id = R.string.collapse),
+                        modifier = Modifier.rotate(180F)
+                    )
+                } else {
+                    Icon(
+                        imageVector = Icons.Filled.KeyboardArrowDown,
+                        contentDescription = stringResource(id = R.string.expand)
+                    )
+                }
+            },
             colors = SearchBarDefaults.colors(containerColor = colorResource(R.color.searchbar_bg)),
         ) {
             Box(
@@ -86,7 +106,7 @@ fun Picker(
                         ){
                             Row {
                                 Icon(imageVector = Icons.Filled.Clear, contentDescription = null)
-                                Text(text = "Show all publishers")
+                                Text(text = stringResource(id = R.string.show_all_publishers))
                             }
                         }
                     }

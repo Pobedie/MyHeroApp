@@ -22,4 +22,10 @@
     <string name="add_favorite">Add to favorites</string>
     <string name="go_back">Go back</string>
     <string name="only_favorites">Only favorites</string>
+    <string name="show_all_favorites">Show all favorites</string>
+    <string name="show_favorites_from">Favorites from </string>
+    <string name="show_all_publishers">Show all publishers </string>
+    <string name="expand">Expand </string>
+    <string name="collapse">Collapse </string>
+
 </resources>

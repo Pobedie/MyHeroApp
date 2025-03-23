@@ -1,7 +1,5 @@
 package com.example.myheroapp.ui.components
 
-import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -22,39 +20,27 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import coil.compose.AsyncImage
-import coil.request.ImageRequest
 import com.example.myheroapp.R
 
+private const val TAG = "PublisherItem"
 
 @Composable
 fun PublisherItem(
     publisherName: String,
     publisherImg: Int,
     onClick: (String) -> Unit,
-//    isSelected: Boolean,
     modifier: Modifier = Modifier
 ){
-//    TODO()
-    val targetColor = if (false) colorResource(R.color.publisheritem_selected_container) else Color.White
-    val animatedColor by animateColorAsState(
-        targetValue = targetColor,
-        animationSpec = tween(durationMillis = 500), label = ""
-    )
     Box(
         modifier = modifier
             .fillMaxWidth()
@@ -84,7 +70,7 @@ fun PublisherItem(
                 .fillMaxWidth(0.9f)
                 .height(65.dp)
                 .clip(RoundedCornerShape(44.dp))
-                .background(animatedColor)
+                .background(colorResource(id = R.color.publisheritem_container))
                 .border(1.5.dp, colorResource(R.color.heroitem_border), RoundedCornerShape(44.dp))
                 .clickable(onClick = { onClick(publisherName) })
         ){

@@ -1,22 +1,9 @@
 package com.example.myheroapp.ui.screens
 
-import androidx.compose.runtime.collectAsState
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.example.myheroapp.data.HeroDataSource
 import com.example.myheroapp.data.HeroRepository
-import com.example.myheroapp.network.Appearance
-import com.example.myheroapp.network.Biography
-import com.example.myheroapp.network.Connections
-import com.example.myheroapp.network.HeroInfo
-import com.example.myheroapp.network.Image
-import com.example.myheroapp.network.PowerStats
-import com.example.myheroapp.network.Work
-import com.example.myheroapp.utils.getPublisherImg
-import com.example.myheroapp.utils.heroEntityToHeroInfo
-import dagger.hilt.android.internal.lifecycle.HiltViewModelFactory
 import dagger.hilt.android.lifecycle.HiltViewModel
 import db.HeroEntity
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -24,6 +11,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+
+private const val TAG = "HeroPageScreenViewModel"
 
 @HiltViewModel
 class HeroPageScreenViewModel @Inject constructor(
@@ -55,7 +44,7 @@ class HeroPageScreenViewModel @Inject constructor(
     }
 
     fun publisherImage(): Int{
-        return getPublisherImg(uiState.value.heroEntity.publisher)
+        return heroRepository.getPublisherImage(uiState.value.heroEntity.publisher)
     }
 
     private fun updateHeroEntry(heroEntity: HeroEntity){

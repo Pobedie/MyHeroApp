@@ -2,6 +2,7 @@ package com.example.myheroapp.data
 
 import android.util.Log
 import com.example.myheroapp.network.SuperheroApi
+import com.example.myheroapp.utils.getPublisherImg
 import com.example.myheroapp.utils.toHeroEntity
 import db.HeroEntity
 import kotlinx.coroutines.flow.Flow
@@ -45,5 +46,9 @@ class HeroRepository @Inject constructor(
     }
     suspend fun selectPublishers(searchPublishers: String): Flow<List<String>>{
         return heroDataSource.selectPublishers(searchPublishers)
+    }
+
+    fun getPublisherImage(publisher: String): Int{
+        return getPublisherImg(publisher)
     }
 }
