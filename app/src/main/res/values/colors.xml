@@ -19,4 +19,5 @@
     <color name="filterbyfavorites_button">#FF6767</color>
     <color name="back_button">#FFFFFFFF</color>
     <color name="publisheritem_container">#FFFFFF</color>
+    <color name="picker_text">#212121</color>
 </resources>

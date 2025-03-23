@@ -87,7 +87,18 @@ fun Picker(
                     )
                 }
             },
-            colors = SearchBarDefaults.colors(containerColor = colorResource(R.color.searchbar_bg)),
+            colors = SearchBarDefaults.colors(
+                containerColor = colorResource(R.color.searchbar_bg),
+                inputFieldColors = SearchBarDefaults.inputFieldColors(
+                    focusedTextColor = colorResource(R.color.picker_text),
+                    unfocusedTextColor = colorResource(R.color.picker_text),
+                    cursorColor = colorResource(R.color.picker_text),
+                    unfocusedTrailingIconColor = colorResource(R.color.picker_text),
+                    focusedTrailingIconColor = colorResource(R.color.picker_text),
+                    unfocusedPlaceholderColor = colorResource(R.color.picker_text),
+
+                )
+            ),
         ) {
             Box(
                 modifier = Modifier.fillMaxSize(),
