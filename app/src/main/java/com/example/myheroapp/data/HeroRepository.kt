@@ -1,8 +1,6 @@
 package com.example.myheroapp.data
 
 import android.util.Log
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.asLiveData
 import com.example.myheroapp.network.SuperheroApi
 import com.example.myheroapp.utils.getPublisherImg
 import com.example.myheroapp.utils.toHeroEntity
@@ -49,9 +47,6 @@ class HeroRepository @Inject constructor(
     }
     private suspend fun insertHeroInDatabase(heroEntity: HeroEntity){
         heroDataSource.insertHero(heroEntity)
-    }
-    suspend fun selectHeroByPublisherAndFavorite(publisher: String, isFavorite: Boolean): Flow<List<HeroEntity>>{
-        return heroDataSource.selectHeroesByPublisherAndFavorite(publisher,isFavorite)
     }
     suspend fun updateHeroIsFavorite(heroEntity: HeroEntity, isFavorite: Boolean){
         heroDataSource.updateIsFavorite(heroEntity, isFavorite)
