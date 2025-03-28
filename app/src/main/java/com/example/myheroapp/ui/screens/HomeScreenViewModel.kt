@@ -1,19 +1,27 @@
 package com.example.myheroapp.ui.screens
 
 import android.util.Log
+import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.myheroapp.data.HeroRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.scopes.ViewModelScoped
 import db.HeroEntity
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -29,6 +37,16 @@ class HomeScreenViewModel @Inject constructor(
     public val uiState = _uiState.asStateFlow()
     var superheroApiState: SuperheroApiState by mutableStateOf(SuperheroApiState.Loading)
         private set
+    val allHeroes = flow<List<HeroEntity>> {
+        while (true){
+            val allHeroes = heroRepository.getAllHeroes(
+                uiState.value.filterByPublisher,
+                uiState.value.showOnlyFavorites
+            )
+            emit(allHeroes)
+            delay(1_000)
+        }
+    }
 
     init {
         getHeroesInfo()
@@ -151,6 +169,14 @@ class HomeScreenViewModel @Inject constructor(
         }
     }
 
+    fun updateLazyListState(listState: LazyListState){
+        _uiState.update { state ->
+            state.copy(
+                lazyListState = listState
+            )
+        }
+    }
+
 }
 
 data class HomeScreenUiState(
@@ -158,6 +184,7 @@ data class HomeScreenUiState(
     val filterByPublisher: String = "",
     val searchIsActive: Boolean = false,
     val loadedFromID: Int = 1,
+    val lazyListState: LazyListState = LazyListState(),
     val publishersList: List<String> = listOf(),
     val heroList: List<HeroEntity> = listOf()
 )

@@ -1,11 +1,14 @@
 package com.example.myheroapp.data
 
 import android.util.Log
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.asLiveData
 import com.example.myheroapp.network.SuperheroApi
 import com.example.myheroapp.utils.getPublisherImg
 import com.example.myheroapp.utils.toHeroEntity
 import db.HeroEntity
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import java.io.IOException
 import javax.inject.Inject
 
@@ -34,6 +37,15 @@ class HeroRepository @Inject constructor(
                 return null
             }
         }
+    }
+    suspend fun getAllHeroes(
+        filterByPublisher: String = "",
+        filterByFavorites: Boolean = false
+    ): List<HeroEntity>{
+        return heroDataSource.selectHeroesByPublisherAndFavorite(
+            filterByPublisher,
+            filterByFavorites
+        ).first()
     }
     private suspend fun insertHeroInDatabase(heroEntity: HeroEntity){
         heroDataSource.insertHero(heroEntity)
