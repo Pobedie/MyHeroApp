@@ -38,10 +38,10 @@ class HomeScreenViewModel @Inject constructor(
                 uiState.value.filterByPublisher,
                 uiState.value.showOnlyFavorites
             )
-            emit(allHeroes)
             if (allHeroes.isEmpty()){
                 getHeroesInfo()
             } else {
+                emit(allHeroes)
                 superheroApiState = SuperheroApiState.Success
             }
             delay(1_000)
@@ -49,7 +49,6 @@ class HomeScreenViewModel @Inject constructor(
     }
 
     init {
-//        getHeroesInfo()
         selectPublishers("")
     }
 
