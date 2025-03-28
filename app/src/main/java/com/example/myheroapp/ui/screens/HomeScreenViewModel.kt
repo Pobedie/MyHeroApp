@@ -39,6 +39,11 @@ class HomeScreenViewModel @Inject constructor(
                 uiState.value.showOnlyFavorites
             )
             emit(allHeroes)
+            if (allHeroes.isEmpty()){
+                getHeroesInfo()
+            } else {
+                superheroApiState = SuperheroApiState.Success
+            }
             delay(1_000)
         }
     }
@@ -92,7 +97,6 @@ class HomeScreenViewModel @Inject constructor(
                 showOnlyFavorites = !currentState
             )
         }
-        selectHeroByPublisherAndFavorite()
     }
 
     fun updateFilterByPublisher(publisher: String){
@@ -101,7 +105,6 @@ class HomeScreenViewModel @Inject constructor(
                 filterByPublisher = publisher
             )
         }
-        selectHeroByPublisherAndFavorite()
     }
 
     fun changeSearchIsActive(){
@@ -110,20 +113,6 @@ class HomeScreenViewModel @Inject constructor(
             state.copy(
                 searchIsActive = !currentState
             )
-        }
-    }
-
-    fun selectHeroByPublisherAndFavorite(){
-        viewModelScope.launch {
-            try {
-                val heroes = heroRepository.selectHeroByPublisherAndFavorite(
-                    uiState.value.filterByPublisher,
-                    uiState.value.showOnlyFavorites)
-                superheroApiState = SuperheroApiState.Success
-            } catch (e: Exception){
-                superheroApiState = SuperheroApiState.Error
-                Log.e(TAG, "Unexpected error: $e")
-            }
         }
     }
 
