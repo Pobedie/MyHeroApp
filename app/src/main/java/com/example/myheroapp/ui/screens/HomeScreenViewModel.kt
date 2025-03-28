@@ -2,17 +2,13 @@ package com.example.myheroapp.ui.screens
 
 import android.util.Log
 import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.myheroapp.data.HeroRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.scopes.ViewModelScoped
 import db.HeroEntity
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -21,7 +17,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -49,37 +44,32 @@ class HomeScreenViewModel @Inject constructor(
     }
 
     init {
-        getHeroesInfo()
+//        getHeroesInfo()
         selectPublishers("")
     }
 
     fun getHeroesInfo() {
-        if (uiState.value.showOnlyFavorites==true || uiState.value.filterByPublisher!=""){
-            selectHeroByPublisherAndFavorite()
-        }else{
-            viewModelScope.launch {
-                try {
-                    val loadFromID = uiState.value.loadedFromID
-                    val deferredResults = (1..loadFromID+ELEMENTS_PER_PAGE).map { id ->
-                        async {
-                            return@async heroRepository.selectHeroById(id.toString())
-                        }
+        viewModelScope.launch {
+            try {
+                val loadFromID = uiState.value.loadedFromID
+                val deferredResults = (1..loadFromID+ELEMENTS_PER_PAGE).map { id ->
+                    async {
+                        return@async heroRepository.selectHeroById(id.toString())
                     }
-
-                    val listResults = deferredResults.awaitAll()
-                    val validResults = listResults.filterNotNull()
-
-                    if (validResults.isNotEmpty()) {
-                        superheroApiState = SuperheroApiState.Success
-                        updateHeroList(validResults)
-                    } else {
-                        superheroApiState = SuperheroApiState.Error
-                        Log.e(TAG, "No valid heroes found in db or API")
-                    }
-                } catch (e: Exception) {
-                    superheroApiState = SuperheroApiState.Error
-                    Log.e(TAG, "Unexpected error: ${e.message}")
                 }
+
+                val listResults = deferredResults.awaitAll()
+                val validResults = listResults.filterNotNull()
+
+                if (validResults.isNotEmpty()) {
+                    superheroApiState = SuperheroApiState.Success
+                } else {
+                    superheroApiState = SuperheroApiState.Error
+                    Log.e(TAG, "No valid heroes found in db or API")
+                }
+            } catch (e: Exception) {
+                superheroApiState = SuperheroApiState.Error
+                Log.e(TAG, "Unexpected error: ${e.message}")
             }
         }
     }
@@ -129,28 +119,11 @@ class HomeScreenViewModel @Inject constructor(
                 val heroes = heroRepository.selectHeroByPublisherAndFavorite(
                     uiState.value.filterByPublisher,
                     uiState.value.showOnlyFavorites)
-                updateHeroList(heroes.first())
                 superheroApiState = SuperheroApiState.Success
             } catch (e: Exception){
                 superheroApiState = SuperheroApiState.Error
                 Log.e(TAG, "Unexpected error: $e")
             }
-        }
-    }
-
-    private fun updateHeroList(heroList: List<HeroEntity>){
-        _uiState.update { state ->
-            state.copy(
-                heroList = heroList
-            )
-        }
-    }
-
-    private fun addToHeroList(heroList: List<HeroEntity>){
-        _uiState.update { state ->
-            state.copy(
-                heroList = state.heroList + heroList
-            )
         }
     }
 
@@ -186,7 +159,6 @@ data class HomeScreenUiState(
     val loadedFromID: Int = 1,
     val lazyListState: LazyListState = LazyListState(),
     val publishersList: List<String> = listOf(),
-    val heroList: List<HeroEntity> = listOf()
 )
 
 sealed interface SuperheroApiState {
