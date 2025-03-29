@@ -44,7 +44,6 @@ private const val TAG = "HeroPageScreen"
 
 @Composable
 fun HeroPageScreen(
-    heroId: Int,
     onBackClick: () -> Unit,
     viewModel: HeroPageScreenViewModel = hiltViewModel<HeroPageScreenViewModel>()
 ){
@@ -119,5 +118,5 @@ private fun HeroPageScreenPreview(){
         connections = Connections("Bonds Bonds Bonds","Bonds from other films"),
         image = Image("")
     )
-    HeroPageScreen(heroId = 1, onBackClick = {})
+    HeroPageScreen( onBackClick = {})
 }
