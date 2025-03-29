@@ -9,21 +9,17 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -33,20 +29,19 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.Observer
 import com.example.myheroapp.R
+import com.example.myheroapp.data.HeroRepository
 import com.example.myheroapp.ui.components.ErrorScreen
 import com.example.myheroapp.ui.components.HeroItem
 import com.example.myheroapp.ui.components.LoadingScreen
 import com.example.myheroapp.ui.components.Picker
 import com.example.myheroapp.ui.components.TopBar
-import kotlinx.coroutines.coroutineScope
 
 private const val TAG = "HomeScreen"
 
 @Composable
 fun HomeScreen(
-    onHeroCardClick: (heroId: String) -> Unit,
+    onHeroCardClick: (heroId: Int) -> Unit,
     viewModel: HomeScreenViewModel = hiltViewModel<HomeScreenViewModel>()
 ){
     val uiState = viewModel.uiState.collectAsState()
@@ -108,14 +103,14 @@ fun HomeScreen(
                             .fillMaxSize()
                     ) {
                         when (superheroApiState) {
-                            is SuperheroApiState.Loading -> item {LoadingScreen()}
-                            is SuperheroApiState.Error -> item {ErrorScreen(onRetry = {viewModel.getHeroesInfo()})}
-                            is SuperheroApiState.Success -> {
+                            is HeroRepository.SuperheroApiState.Loading -> item {LoadingScreen()}
+                            is HeroRepository.SuperheroApiState.Error -> item {ErrorScreen(onRetry = {viewModel.fetchMoreHeroes()})}
+                            is HeroRepository.SuperheroApiState.Success -> {
                                 items(heroList.value){ item ->
                                     HeroItem(
                                         heroEntity = item,
                                         publisherImg = viewModel.publisherImage(item.publisher),
-                                        onHeroCardClick = {onHeroCardClick(item.id)}
+                                        onHeroCardClick = {onHeroCardClick(item.id.toInt())}
                                     )
                                 }
                                 if (!uiState.value.showOnlyFavorites && uiState.value.filterByPublisher==""){
@@ -129,7 +124,7 @@ fun HomeScreen(
                                                 .height(80.dp)
                                                 .clickable {
                                                     if (!buttonPressed.value) {
-                                                        viewModel.loadMoreElements()
+                                                        viewModel.fetchMoreHeroes()
                                                         buttonPressed.value = true
                                                     }
                                                 },

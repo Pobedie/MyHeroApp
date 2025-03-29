@@ -18,7 +18,7 @@ data object HomeScreenRoute
 
 @Serializable
 data class HeroPageRoute(
-    val heroId: String
+    val heroId: Int
 )
 
 @Composable

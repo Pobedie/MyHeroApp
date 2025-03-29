@@ -21,17 +21,17 @@ class HeroPageScreenViewModel @Inject constructor(
 ): ViewModel() {
     private val _uiState = MutableStateFlow(HeroPageScreenUiState())
     public val uiState = _uiState.asStateFlow()
-    private val heroId: String
+    private val heroId: Int
 
     init {
-        heroId = savedStateHandle.get<String>("heroId") ?: throw IllegalArgumentException("ID is required")
+        heroId = savedStateHandle.get<Int>("heroId") ?: throw IllegalArgumentException("ID is required")
         viewModelScope.launch {
             getHeroInformation(heroId)
         }
     }
 
-    private suspend fun getHeroInformation(id: String){
-        val hero = heroRepository.selectHeroById(id)!!
+    private suspend fun getHeroInformation(id: Int){
+        val hero = heroRepository.selectHeroById(id)
         updateHeroEntry(heroEntity = hero)
     }
 
