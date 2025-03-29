@@ -45,12 +45,15 @@ class HeroRepository @Inject constructor(
             filterByFavorites
         ).first()
     }
+
     private suspend fun insertHeroInDatabase(heroEntity: HeroEntity){
         heroDataSource.insertHero(heroEntity)
     }
+
     suspend fun updateHeroIsFavorite(heroEntity: HeroEntity, isFavorite: Boolean){
         heroDataSource.updateIsFavorite(heroEntity, isFavorite)
     }
+
     suspend fun selectPublishers(searchPublishers: String): Flow<List<String>>{
         return heroDataSource.selectPublishers(searchPublishers)
     }
