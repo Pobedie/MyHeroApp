@@ -54,13 +54,6 @@ class HomeScreenViewModel @Inject constructor(
         }
     }
 
-//    fun loadMoreElements(){
-//        _uiState.update { state ->
-//            state.copy(loadedFromID = state.loadedFromID + ELEMENTS_PER_PAGE+1)
-//        }
-//        fetchMoreHeroes()
-//    }
-
     fun publisherImage(publisher: String): Int{
         return heroRepository.getPublisherImage(publisher)
     }
@@ -120,7 +113,6 @@ data class HomeScreenUiState(
     val showOnlyFavorites: Boolean = false,
     val filterByPublisher: String = "",
     val searchIsActive: Boolean = false,
-//    val loadedFromID: Int = 1,
     val lazyListState: LazyListState = LazyListState(),
     val publishersList: List<String> = listOf(),
 )
