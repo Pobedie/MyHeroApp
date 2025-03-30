@@ -66,7 +66,7 @@ class HomeScreenViewModel @Inject constructor(
         val currentState = uiState.value.showOnlyFavorites
         _uiState.update { state ->
             state.copy(
-                showOnlyFavorites = !currentState
+                showOnlyFavorites = !currentState,
             )
         }
     }
@@ -74,7 +74,7 @@ class HomeScreenViewModel @Inject constructor(
     fun updateFilterByPublisher(publisher: String){
         _uiState.update { state ->
             state.copy(
-                filterByPublisher = publisher
+                filterByPublisher = publisher,
             )
         }
     }
@@ -110,17 +110,6 @@ class HomeScreenViewModel @Inject constructor(
             )
         }
     }
-
-    var scrollState by mutableStateOf(LazyListState())
-        private set
-
-    fun saveScrollPosition(state: LazyListState) {
-        scrollState = LazyListState(
-            state.firstVisibleItemIndex,
-            state.firstVisibleItemScrollOffset
-        )
-    }
-
 }
 
 data class HomeScreenUiState(

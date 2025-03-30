@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -29,6 +30,9 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.myheroapp.R
 import com.example.myheroapp.network.SuperheroApiState
@@ -48,6 +52,7 @@ fun HomeScreen(
     val uiState = viewModel.uiState.collectAsState()
     val superheroApiState = viewModel.superheroApiState
     val heroList  = viewModel.allHeroes.collectAsStateWithLifecycle(initialValue = listOf()).value
+    val lifecycleOwner = LocalLifecycleOwner.current
     val listState = rememberLazyListState(
         initialFirstVisibleItemIndex = uiState.value.lazyListState.firstVisibleItemIndex,
         initialFirstVisibleItemScrollOffset = uiState.value.lazyListState.firstVisibleItemScrollOffset
@@ -59,11 +64,16 @@ fun HomeScreen(
             viewModel.updateLazyListState(listState)
         }
     }
-    LaunchedEffect(heroList.isNotEmpty()) {
-        listState.requestScrollToItem(
-            uiState.value.lazyListState.firstVisibleItemIndex,
-            uiState.value.lazyListState.firstVisibleItemScrollOffset
-        )
+    LaunchedEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME||event == Lifecycle.Event.ON_START) {
+                listState.requestScrollToItem(
+                    uiState.value.lazyListState.firstVisibleItemIndex,
+                    uiState.value.lazyListState.firstVisibleItemScrollOffset
+                )
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
     }
 
     Scaffold(
@@ -93,9 +103,11 @@ fun HomeScreen(
                     onSearchQuery = {viewModel.selectPublishers(it ?: "")},
                     onPublisherClick = {
                         viewModel.updateFilterByPublisher(it)
+                        viewModel.updateLazyListState(LazyListState(0,0))
                         viewModel.changeSearchIsActive() },
                     onFavoritesClick = {
-                        viewModel.changeShowOnlyFavorites() },
+                        viewModel.changeShowOnlyFavorites()
+                        viewModel.updateLazyListState(LazyListState(0,0)) },
                     isFavoriteFilterOn = uiState.value.showOnlyFavorites,
                 )
                 Box(
