@@ -31,7 +31,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.myheroapp.R
-import com.example.myheroapp.data.HeroRepository
+import com.example.myheroapp.network.SuperheroApiState
 import com.example.myheroapp.ui.components.ErrorScreen
 import com.example.myheroapp.ui.components.HeroItem
 import com.example.myheroapp.ui.components.LoadingScreen
@@ -53,16 +53,14 @@ fun HomeScreen(
         initialFirstVisibleItemScrollOffset = uiState.value.lazyListState.firstVisibleItemScrollOffset
     )
 
+//    Фикс бага, когда после рекомпозиции экрана позиция скролла оказывается в начале списка
     LaunchedEffect(listState.isScrollInProgress) {
         if (!listState.isScrollInProgress) {
-//            println("Saving position: ${listState.firstVisibleItemIndex}")
             viewModel.updateLazyListState(listState)
         }
     }
-
     LaunchedEffect(heroList.isNotEmpty()) {
-//        println("Scrolling to: ${uiState.value.lazyListState.firstVisibleItemIndex}")
-        listState.animateScrollToItem(
+        listState.requestScrollToItem(
             uiState.value.lazyListState.firstVisibleItemIndex,
             uiState.value.lazyListState.firstVisibleItemScrollOffset
         )
@@ -113,11 +111,11 @@ fun HomeScreen(
                             .fillMaxSize()
                     ) {
                         when (superheroApiState) {
-                            is HeroRepository.SuperheroApiState.Loading -> item {LoadingScreen()}
-                            is HeroRepository.SuperheroApiState.Error -> item {ErrorScreen(onRetry = {
-                                viewModel.superheroApiState = HeroRepository.SuperheroApiState.Loading})}
-                            is HeroRepository.SuperheroApiState.Success -> {
-                                items(heroList){ item ->
+                            is SuperheroApiState.Loading -> item {LoadingScreen()}
+                            is SuperheroApiState.Error -> item {ErrorScreen(onRetry = {
+                                viewModel.superheroApiState = SuperheroApiState.Loading})}
+                            is SuperheroApiState.Success -> {
+                                items(heroList, key = {item -> item.id}){ item ->
                                     HeroItem(
                                         heroEntity = item,
                                         publisherImg = viewModel.publisherImage(item.publisher),
