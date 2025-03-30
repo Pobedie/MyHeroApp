@@ -55,13 +55,13 @@ fun HomeScreen(
 
     LaunchedEffect(listState.isScrollInProgress) {
         if (!listState.isScrollInProgress) {
-            println("Saving position: ${listState.firstVisibleItemIndex}")
+//            println("Saving position: ${listState.firstVisibleItemIndex}")
             viewModel.updateLazyListState(listState)
         }
     }
 
     LaunchedEffect(heroList.isNotEmpty()) {
-        println("Scrolling to: ${uiState.value.lazyListState.firstVisibleItemIndex}")
+//        println("Scrolling to: ${uiState.value.lazyListState.firstVisibleItemIndex}")
         listState.animateScrollToItem(
             uiState.value.lazyListState.firstVisibleItemIndex,
             uiState.value.lazyListState.firstVisibleItemScrollOffset
@@ -108,7 +108,7 @@ fun HomeScreen(
                     contentAlignment = Alignment.TopCenter
                 ){
                     LazyColumn(
-//                        state = listState,
+                        state = listState,
                         modifier = Modifier
                             .fillMaxSize()
                     ) {
