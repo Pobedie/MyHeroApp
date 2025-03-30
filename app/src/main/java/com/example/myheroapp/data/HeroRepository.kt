@@ -2,6 +2,7 @@ package com.example.myheroapp.data
 
 import android.util.Log
 import com.example.myheroapp.network.SuperheroApi
+import com.example.myheroapp.network.SuperheroApiState
 import com.example.myheroapp.utils.getPublisherImg
 import com.example.myheroapp.utils.toHeroEntity
 import db.HeroEntity
@@ -91,10 +92,4 @@ class HeroRepository @Inject constructor(
         return getPublisherImg(publisher)
     }
 
-//    Maybe move this to its own file
-    sealed interface SuperheroApiState {
-        object Success : SuperheroApiState
-        object Error : SuperheroApiState
-        object Loading : SuperheroApiState
-    }
 }

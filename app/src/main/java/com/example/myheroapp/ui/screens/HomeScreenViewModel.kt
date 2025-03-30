@@ -7,6 +7,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.myheroapp.data.HeroRepository
+import com.example.myheroapp.network.SuperheroApiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -27,10 +28,10 @@ class HomeScreenViewModel @Inject constructor(
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(HomeScreenUiState())
     public val uiState = _uiState.asStateFlow()
-    var superheroApiState: HeroRepository.SuperheroApiState by mutableStateOf(HeroRepository.SuperheroApiState.Loading)
+    var superheroApiState: SuperheroApiState by mutableStateOf(SuperheroApiState.Loading)
     val allHeroes = flow{
         while (true){
-            if (superheroApiState!=HeroRepository.SuperheroApiState.Error){
+            if (superheroApiState!=SuperheroApiState.Error){
                 val allHeroes = heroRepository.getAllHeroes(
                     uiState.value.filterByPublisher,
                     uiState.value.showOnlyFavorites
@@ -39,7 +40,7 @@ class HomeScreenViewModel @Inject constructor(
                     superheroApiState = heroRepository.fetchHeroes()
                 } else {
                     emit(allHeroes)
-                    superheroApiState = HeroRepository.SuperheroApiState.Success
+                    superheroApiState = SuperheroApiState.Success
                 }
             }
             delay(1000L)
