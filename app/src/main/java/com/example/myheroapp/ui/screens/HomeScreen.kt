@@ -16,7 +16,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -29,6 +29,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.myheroapp.R
 import com.example.myheroapp.data.HeroRepository
 import com.example.myheroapp.ui.components.ErrorScreen
@@ -46,16 +47,25 @@ fun HomeScreen(
 ){
     val uiState = viewModel.uiState.collectAsState()
     val superheroApiState = viewModel.superheroApiState
-    val heroList = viewModel.allHeroes.collectAsState(initial = listOf())
+    val heroList  = viewModel.allHeroes.collectAsStateWithLifecycle(initialValue = listOf())
     val listState = rememberLazyListState(
-//        TODO
+        initialFirstVisibleItemIndex = uiState.value.lazyListState.firstVisibleItemIndex,
+        initialFirstVisibleItemScrollOffset = uiState.value.lazyListState.firstVisibleItemScrollOffset
     )
 
-    DisposableEffect(key1 = Unit) {
-        onDispose {
+    LaunchedEffect(listState.isScrollInProgress) {
+        if (!listState.isScrollInProgress) {
+            println("Saving position: ${listState.firstVisibleItemIndex}")
             viewModel.updateLazyListState(listState)
-            println("ON DISPOSE")
         }
+    }
+
+    LaunchedEffect(heroList.value.isNotEmpty()) {
+        println("Scrolling to: ${uiState.value.lazyListState.firstVisibleItemIndex}")
+        listState.animateScrollToItem(
+            uiState.value.lazyListState.firstVisibleItemIndex,
+            uiState.value.lazyListState.firstVisibleItemScrollOffset
+        )
     }
 
     Scaffold(
@@ -104,7 +114,8 @@ fun HomeScreen(
                     ) {
                         when (superheroApiState) {
                             is HeroRepository.SuperheroApiState.Loading -> item {LoadingScreen()}
-                            is HeroRepository.SuperheroApiState.Error -> item {ErrorScreen(onRetry = {viewModel.fetchMoreHeroes()})}
+                            is HeroRepository.SuperheroApiState.Error -> item {ErrorScreen(onRetry = {
+                                viewModel.superheroApiState = HeroRepository.SuperheroApiState.Loading})}
                             is HeroRepository.SuperheroApiState.Success -> {
                                 items(heroList.value){ item ->
                                     HeroItem(

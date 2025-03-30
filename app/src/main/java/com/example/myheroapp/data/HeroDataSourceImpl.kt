@@ -2,7 +2,6 @@ package com.example.myheroapp.data
 
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToList
-import com.example.myheroapp.network.HeroInfo
 import com.example.sqldelight.db.HeroDatabase
 import db.HeroEntity
 import kotlinx.coroutines.Dispatchers
@@ -20,12 +19,10 @@ class HeroDataSourceImpl(
         }
     }
 
-    override fun selectAllHeroes(): Flow<List<HeroEntity>> {
-        return queries.selectAllHeroes().asFlow().mapToList(Dispatchers.IO)
-    }
-
-    override fun selectFavoriteHeroes(): Flow<List<HeroEntity>> {
-        return queries.selectFavoriteHeroes().asFlow().mapToList(Dispatchers.IO)
+    override suspend fun selectAllHeroes(): Flow<List<HeroEntity>> {
+        return withContext(Dispatchers.IO){
+            queries.selectAllHeroes().asFlow().mapToList(Dispatchers.IO)
+        }
     }
 
     override suspend fun insertHero(

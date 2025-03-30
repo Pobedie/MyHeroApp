@@ -18,8 +18,8 @@ class HeroRepository @Inject constructor(
 ) {
     suspend fun fetchHeroes(): SuperheroApiState{
         try {
-            val loadFromID = getAllHeroes().size
-            val deferredResults = (1..loadFromID+ ELEMENTS_PER_PAGE).map { id ->
+            val startLoadFromID = getAllHeroes().size
+            val deferredResults = (1..startLoadFromID+ ELEMENTS_PER_PAGE).map { id ->
                 val heroFromDb = heroDataSource.selectHeroById(id.toString())
                 if (heroFromDb != null){
                     Log.i(TAG, "Hero found in db, loading from there: $heroFromDb")

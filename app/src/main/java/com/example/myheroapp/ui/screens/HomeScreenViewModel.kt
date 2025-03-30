@@ -8,12 +8,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.myheroapp.data.HeroRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import db.HeroEntity
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -27,26 +28,29 @@ class HomeScreenViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(HomeScreenUiState())
     public val uiState = _uiState.asStateFlow()
     var superheroApiState: HeroRepository.SuperheroApiState by mutableStateOf(HeroRepository.SuperheroApiState.Loading)
-        private set
-    val allHeroes = flow<List<HeroEntity>> {
+    val allHeroes = flow{
         while (true){
-            val allHeroes = heroRepository.getAllHeroes(
-                uiState.value.filterByPublisher,
-                uiState.value.showOnlyFavorites
-            )
-            if (allHeroes.isEmpty()){
-                fetchMoreHeroes()
-            } else {
-                emit(allHeroes)
-                superheroApiState = HeroRepository.SuperheroApiState.Success
+            if (superheroApiState!=HeroRepository.SuperheroApiState.Error){
+                val allHeroes = heroRepository.getAllHeroes(
+                    uiState.value.filterByPublisher,
+                    uiState.value.showOnlyFavorites
+                )
+                if (allHeroes.isEmpty()){
+                    superheroApiState = heroRepository.fetchHeroes()
+                } else {
+                    emit(allHeroes)
+                    superheroApiState = HeroRepository.SuperheroApiState.Success
+                }
+
             }
-            delay(1_000)
+            delay(1000L)
         }
-    }
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), listOf())
 
     init {
         selectPublishers("")
     }
+
 
     fun fetchMoreHeroes() {
         viewModelScope.launch {
@@ -105,6 +109,16 @@ class HomeScreenViewModel @Inject constructor(
                 lazyListState = listState
             )
         }
+    }
+
+    var scrollState by mutableStateOf(LazyListState())
+        private set
+
+    fun saveScrollPosition(state: LazyListState) {
+        scrollState = LazyListState(
+            state.firstVisibleItemIndex,
+            state.firstVisibleItemScrollOffset
+        )
     }
 
 }
