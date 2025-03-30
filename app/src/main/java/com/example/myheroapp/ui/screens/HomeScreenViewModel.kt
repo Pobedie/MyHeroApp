@@ -35,13 +35,12 @@ class HomeScreenViewModel @Inject constructor(
                     uiState.value.filterByPublisher,
                     uiState.value.showOnlyFavorites
                 )
-                if (allHeroes.isEmpty()){
+                if (allHeroes.isEmpty() && (!uiState.value.showOnlyFavorites&&uiState.value.filterByPublisher=="")){
                     superheroApiState = heroRepository.fetchHeroes()
                 } else {
                     emit(allHeroes)
                     superheroApiState = HeroRepository.SuperheroApiState.Success
                 }
-
             }
             delay(1000L)
         }

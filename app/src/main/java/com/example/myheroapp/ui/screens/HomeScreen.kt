@@ -47,7 +47,7 @@ fun HomeScreen(
 ){
     val uiState = viewModel.uiState.collectAsState()
     val superheroApiState = viewModel.superheroApiState
-    val heroList  = viewModel.allHeroes.collectAsStateWithLifecycle(initialValue = listOf())
+    val heroList  = viewModel.allHeroes.collectAsStateWithLifecycle(initialValue = listOf()).value
     val listState = rememberLazyListState(
         initialFirstVisibleItemIndex = uiState.value.lazyListState.firstVisibleItemIndex,
         initialFirstVisibleItemScrollOffset = uiState.value.lazyListState.firstVisibleItemScrollOffset
@@ -60,7 +60,7 @@ fun HomeScreen(
         }
     }
 
-    LaunchedEffect(heroList.value.isNotEmpty()) {
+    LaunchedEffect(heroList.isNotEmpty()) {
         println("Scrolling to: ${uiState.value.lazyListState.firstVisibleItemIndex}")
         listState.animateScrollToItem(
             uiState.value.lazyListState.firstVisibleItemIndex,
@@ -108,7 +108,7 @@ fun HomeScreen(
                     contentAlignment = Alignment.TopCenter
                 ){
                     LazyColumn(
-                        state = listState,
+//                        state = listState,
                         modifier = Modifier
                             .fillMaxSize()
                     ) {
@@ -117,7 +117,7 @@ fun HomeScreen(
                             is HeroRepository.SuperheroApiState.Error -> item {ErrorScreen(onRetry = {
                                 viewModel.superheroApiState = HeroRepository.SuperheroApiState.Loading})}
                             is HeroRepository.SuperheroApiState.Success -> {
-                                items(heroList.value){ item ->
+                                items(heroList){ item ->
                                     HeroItem(
                                         heroEntity = item,
                                         publisherImg = viewModel.publisherImage(item.publisher),
